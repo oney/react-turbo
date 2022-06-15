@@ -7,21 +7,25 @@
 
 ## The ultimate solution for React performance optimization
 
-`react-turbo` transforms your React apps to have truly **fine-grained reactivity**, so you don't need to worry about performance optimization anymore.
+`react-turbo` transforms your React apps to have truly **fine-grained reactivity**, so you don't need to worry about performance optimization anymore. Read [this article](https://medium.com/@anokyy/react-turbo-the-ultimate-solution-to-optimize-react-performance-b666ca9db0b5) to know more.
 
 ## Installatoin
 
-`react-turbo` comes with a babel plugin, so the prerequisite is `react-app-rewired`. Follow the steps of [`react-app-rewired`](https://github.com/timarney/react-app-rewired) and [`customize-cra`](https://github.com/arackaf/customize-cra).
+`react-turbo` comes with a babel plugin, so the prerequisite is `react-app-rewired`. If you've installed it, you can skip.
+
+### Install `react-app-rewired` and `customize-cra`
+
+Follow the steps of [`react-app-rewired`](https://github.com/timarney/react-app-rewired) and [`customize-cra`](https://github.com/arackaf/customize-cra).
 
 ```
 npm i --save-dev react-app-rewired customize-cra
 ```
 Modify `package.json`, add `config-overrides.js` and `.babelrc`.
 
-Then, install `react-turbo` and the plugin
+### Install `react-turbo` and the plugin
 ```
-npm i --save-dev babel-plugin-react-turbo
 npm i react-turbo
+npm i --save-dev babel-plugin-react-turbo
 ```
 Modify `.babelrc`
 ```
@@ -30,3 +34,39 @@ Modify `.babelrc`
 }
 ```
 You can see all changes of installation in [this commit](https://github.com/oney/react-turbo-demo/commit/0158d28896468162636daba3aaf7431a7b3d03b4).
+
+## [Example](https://github.com/oney/react-turbo-demo)
+
+```jsx
+function expensiveRandom(a) {
+  let k = 0;
+  for (let i = 0; i < 10_000_000; i++) k += Math.random();
+  return k + a;
+}
+
+function App() {
+  const [a, setA] = useState(1000);
+  const [b, setB] = useState(1000);
+
+  return (
+    <div className="App">
+      <input value={a} type="number"
+        onChange={(e) => setA(parseInt(e.target.value))}/>
+      <span>{expensiveRandom(a)}</span>
+      <input value={b} type="number"
+        onChange={(e) => setB(parseInt(e.target.value))}/>
+      <span>{b}</span>
+    </div>
+  );
+}
+```
+
+`expensiveRandom` contains some expensive calculation. When `a` or `b` changes, the component will re-render. The rendering will be stuck because it hits `<span>{expensiveRandom(a)}</span>`.
+
+With `react-turbo`, when `b` changes, only the elements that depend on `b` will re-render (`<input value={b}` and `<span>{b}</span>`), so `expensiveRandom(a)` won't be executed.
+
+Note that, `react-turbo` happens in compile time with babel, so you don't need to modify any code to get it work.
+
+## babel-plugin-react-turbo
+
+https://www.npmjs.com/package/babel-plugin-react-turbo
