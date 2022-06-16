@@ -1,4 +1,4 @@
-# React Turbo
+# React Turbo (beta)
 
 [![npm](https://img.shields.io/npm/v/react-turbo?style=flat-square)](https://www.npmjs.com/package/react-turbo)
 [![npm bundle size](https://img.shields.io/bundlephobia/minzip/react-turbo?style=flat-square)](https://bundlephobia.com/result?p=react-turbo)
@@ -7,11 +7,11 @@
 
 ## The ultimate solution for React performance optimization
 
-`react-turbo` transforms your React apps to have truly **fine-grained reactivity**, so you don't need to worry about performance optimization anymore. Read [this article](https://medium.com/@anokyy/react-turbo-the-ultimate-solution-to-optimize-react-performance-b666ca9db0b5) to know more.
+`react-turbo` transforms your React apps to have truly **fine-grained reactivity**, so you don't need to worry about React performance optimization anymore. Read [this article](https://medium.com/@anokyy/react-turbo-the-ultimate-solution-to-optimize-react-performance-b666ca9db0b5) to know more.
 
 ## Installatoin
 
-`react-turbo` comes with a babel plugin, so the prerequisite is `react-app-rewired`. If you've installed it, you can skip.
+`react-turbo` comes with a babel plugin, so the prerequisite is `react-app-rewired`. If you've installed it, you can skip and jump to install `react-turbo`.
 
 ### Install `react-app-rewired` and `customize-cra`
 
@@ -41,7 +41,8 @@ You can see all changes of installation in [this commit](https://github.com/oney
 function expensiveRandom(a) {
   let k = 0;
   for (let i = 0; i < 10_000_000; i++) k += Math.random();
-  return k + a;
+  console.log('expensiveRandom:', k);
+  return a;
 }
 
 function App() {
@@ -70,3 +71,40 @@ Note that, `react-turbo` happens in compile time with babel, so you don't need t
 ## babel-plugin-react-turbo
 
 https://www.npmjs.com/package/babel-plugin-react-turbo
+
+## Details
+
+The above example will be compiled to something like
+
+```jsx
+function App() {
+  const [$a, setA] = useAtom(1000);
+  const [$b, setB] = useAtom(1000);
+
+  return (
+    <div className="App">
+      <Controller a={$a}>
+        {({a}) => (
+          <input value={a} type="number"
+            onChange={(e) => setA(parseInt(e.target.value))}/>
+        )}
+      </Controller>
+      <Controller a={$a}>
+        {({a}) => <span>{expensiveRandom(a)}</span>}
+      </Controller>
+      <Controller b={$b}>
+        {({b}) => (
+          <input value={b} type="number"
+            onChange={(e) => setB(parseInt(e.target.value))}/>
+        )}
+      </Controller>
+      <Controller b={$b}>
+        {({b}) => <span>{b}</span>}
+      </Controller>
+    </div>
+  );
+}
+```
+So no matter how fast `b` changes, the elements depending on `a` won't re-render.
+
+`$a` and `$b` are observable atoms like [Recoil](https://recoiljs.org/), [Jotai](https://jotai.org/) or [effector](https://effector.dev/).
