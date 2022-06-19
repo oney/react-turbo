@@ -5,6 +5,8 @@
 [![npm type definitions](https://img.shields.io/npm/types/typescript?style=flat-square)](https://github.com/oney/react-turbo/blob/master/src/index.tsx)
 [![GitHub](https://img.shields.io/github/license/oney/react-turbo?style=flat-square)](https://github.com/oney/react-turbo/blob/master/LICENSE)
 
+Please do not use this in production. The project is still in development and not well tested.
+
 ## The ultimate solution for React performance optimization
 
 `react-turbo` transforms your React apps to have truly **fine-grained reactivity**, so you don't need to worry about React performance optimization anymore. Read [this article](https://medium.com/@anokyy/react-turbo-the-ultimate-solution-to-optimize-react-performance-b666ca9db0b5) to know more.
